@@ -42,4 +42,5 @@ dependencies {
     compile(kotlinModule("stdlib"))
     compile(kotlinModule("reflect"))
     compile("net.sourceforge.argparse4j:argparse4j:0.7.0")
+    compile("com.flowpowered:flow-nbt:1.0.0")
 }

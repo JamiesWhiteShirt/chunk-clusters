@@ -3,8 +3,9 @@ package com.jamieswhiteshirt.chunkclusters
 import java.io.File
 
 class RegionDirectory(val directory: File) {
-    fun readChunks(): List<ChunkPos> {
-        return directory.listFiles().mapNotNull { file ->
+    fun readChunks(): Map<List<StackTraceElement>, Set<ChunkPos>> {
+        val result = HashMap<List<StackTraceElement>, MutableSet<ChunkPos>>()
+        directory.listFiles().mapNotNull { file ->
             val nameMatch = regionFilePattern.find(file.name)
             if (nameMatch != null) {
                 val (_, x, z) = nameMatch.groupValues
@@ -12,6 +13,11 @@ class RegionDirectory(val directory: File) {
             } else {
                 null
             }
-        }.map(RegionFile::readChunks).flatten()
+        }.forEach { chunkMap ->
+            chunkMap.readChunks().forEach { stackTrace, chunkPositions ->
+                result.getOrPut(stackTrace, { HashSet() }).addAll(chunkPositions)
+            }
+        }
+        return result
     }
 }
